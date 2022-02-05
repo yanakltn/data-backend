@@ -1,3 +1,8 @@
-const database = [];
+const mongoose = require("mongoose");
 
-module.exports = database;
+const AppSchema = mongoose.Schema({
+    name: String,
+    surname: String,
+});
+
+module.exports = mongoose.model("App", AppSchema);

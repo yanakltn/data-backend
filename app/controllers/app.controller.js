@@ -1,56 +1,110 @@
-const database = require("../model/app.model.js");
+const App = require("../model/app.model.js");
 
 // Create and Save a new Message
 exports.create = (req, res) => {
-    database.push(req.body);
-    res.status(201).send({ message: "Created" });
+    const data = new App({
+        name: req.body.name,
+        surname: req.body.surname
+    });
+    data
+        .save()
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while creating the data.",
+            });
+        });
 };
 
 // Retrieve all messages from the database.
 exports.findAll = (req, res) => {
-    res.send(database);
+    App.find()
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving data.",
+            });
+        });
 };
 
 // Find a single message with a messageId
 exports.findOne = (req, res) => {
-    const id = req.params.id;
-    const item = database.find(item => item.id == id);
-    if (!!item) {
-        res.send(item);
-    } else {
-        res.status(404).send({
-            message: "Data not found with id " + id,
+    App.findById(req.params.id)
+        .then((data) => {
+            if (!data) {
+                return res.status(404).send({
+                    message: "Data not found with id " + req.params.id,
+                });
+            }
+            res.send(data);
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId") {
+                return res.status(404).send({
+                    message: "Data not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving data with id " + req.params.id,
+            });
         });
-    }
 };
 
 // Update a message identified by the messageId in the request
 exports.update = (req, res) => {
-    const id = req.params.id;
-    const item = req.body;
-
-    const index = database.findIndex(item => item.id == id);
-    if (index >= 0) {
-        database[index] = item;
-        res.send(item);
-    } else {
-        res.status(404).send({
-            message: "Data not found with id " + id,
+    App.findByIdAndUpdate(
+        req.params.id,
+        {
+            name: req.body.name,
+            surname: req.body.surname
+        },
+        { new: true }
+    )
+        .then((data) => {
+            if (!data) {
+                return res.status(404).send({
+                    message: "Data not found with id " + req.params.id,
+                });
+            }
+            res.send(data);
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId") {
+                return res.status(404).send({
+                    message: "Data not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).send({
+                message: "Error updating data with id " + req.params.id,
+            });
         });
-    }
 };
 
 // Delete a message with the specified messageId in the request
 exports.delete = (req, res) => {
-    const id = req.params.id;
-
-    const index = database.findIndex(item => item.id == id);
-    if (index >= 0) {
-        database.splice(index, 1);
-        res.status(200).send({ message: "Deleted" });
-    } else {
-        res.status(404).send({
-            message: "Data not found with id " + id,
+    App.findByIdAndRemove(req.params.id)
+        .then((data) => {
+            if (!data) {
+                return res.status(404).send({
+                    message: "Data not found with id " + req.params.id,
+                });
+            }
+            res.send({ message: "Data deleted successfully!" });
+        })
+        .catch((err) => {
+            if (err.kind === "ObjectId" || err.name === "NotFound") {
+                return res.status(404).send({
+                    message: "Data not found with id " + req.params.id,
+                });
+            }
+            return res.status(500).send({
+                message: "Could not delete data with id " + req.params.id,
+            });
         });
-    }
 };
