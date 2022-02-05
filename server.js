@@ -1,4 +1,5 @@
 const express = require('express');
+const expressOasGenerator = require('express-oas-generator');
 const bodyParser = require('body-parser');
 
 const mongoose = require("mongoose");
@@ -18,6 +19,7 @@ mongoose.connect("mongodb://127.0.0.1:27017",
     });
 
 const app = express();
+expressOasGenerator.init(app, {});
 
 app.use(bodyParser.urlencoded({ extended: true }))
 
