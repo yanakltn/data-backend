@@ -29,7 +29,10 @@ app.get('/', (req, res) => {
     res.json({ "message": "Server is running :D" });
 });
 
-let PORT = 8080
+let PORT = parseInt(process.env.PORT, 10);
+if (Number.isNaN(PORT)) {
+    PORT = 8080;
+}
 
 require('./app/routes/app.routes.js')(app);
 
