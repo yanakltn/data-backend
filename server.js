@@ -1,7 +1,7 @@
 const express = require('express');
 const expressOasGenerator = require('express-oas-generator');
 const bodyParser = require('body-parser');
-
+const cors = require('cors')
 const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise;
@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(bodyParser.json())
 
+app.use(cors())
 app.get('/', (req, res) => {
     res.json({ "message": "Server is running :D" });
 });

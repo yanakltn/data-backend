@@ -3,8 +3,8 @@ const App = require("../model/app.model.js");
 // Create and Save a new Message
 exports.create = (req, res) => {
     const data = new App({
-        name: req.body.name,
-        surname: req.body.surname
+        firstName: req.body.firstName,
+        lastName: req.body.lastName
     });
     data
         .save()
@@ -61,8 +61,8 @@ exports.update = (req, res) => {
     App.findByIdAndUpdate(
         req.params.id,
         {
-            name: req.body.name,
-            surname: req.body.surname
+            firstName: req.body.firstName,
+            lastName: req.body.lastName
         },
         { new: true }
     )
